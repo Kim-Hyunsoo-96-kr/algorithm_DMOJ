@@ -57,6 +57,7 @@ fun q4(){
                 println(count)
                 return
             }
+            map[row][col] = ","
             if((row+1 < maxRow) && (map[row+1][col] == "." || map[row+1][col] == "D")) newQueue.add(row+1 to col)
             if((row-1 >= 0) && (map[row-1][col] == "." || map[row-1][col] == "D")) newQueue.add(row-1 to col)
             if((col+1 < maxCol) && (map[row][col+1] == "." || map[row][col+1] == "D")) newQueue.add(row to col+1)

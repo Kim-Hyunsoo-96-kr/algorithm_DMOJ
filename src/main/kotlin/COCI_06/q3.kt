@@ -21,20 +21,40 @@ fun q3(){
 //    val bf = BufferedReader(InputStreamReader(System.`in`))
 //    val input = bf.readText().trim()
 
-    /** input의 길이를 통해 output의 길이를 알 수 있다. (output length = (input length -1) * 4 + 5 */
     /** output의 높이는 5로 고정, 각 라인을 빈 String으로 초기화 */
-    val line1 = ""
-    val line2 = ""
-    val line3 = ""
-    val line4 = ""
-    val line5 = ""
+    val lines = mutableListOf(
+        "..#..",
+        ".#.#.",
+        "#.${input[0]}.#",
+        ".#.#.",
+        "..#.."
+    )
 
+    fun peterPan(startIdx:Int, c:String, isWendyNext:Boolean){
+        lines[0] = lines[0].substring(0, startIdx) + "..#.."
+        lines[1] = lines[1].substring(0, startIdx) + ".#.#."
+        lines[2] = if(isWendyNext) lines[2] + ".$c.#" else lines[2].substring(0, startIdx) + "#.$c.#"
+        lines[3] = lines[3].substring(0, startIdx) + ".#.#."
+        lines[4] = lines[4].substring(0, startIdx) + "..#.."
+    }
+    fun wendy(startIdx:Int, c:String){
+        lines[0] = lines[0].substring(0, startIdx) + "..*.."
+        lines[1] = lines[1].substring(0, startIdx) + ".*.*."
+        lines[2] = lines[2].substring(0, startIdx) + "*.$c.*"
+        lines[3] = lines[3].substring(0, startIdx) + ".*.*."
+        lines[4] = lines[4].substring(0, startIdx) + "..*.."
+    }
     /** input을 순회하면서 index % 3 == 2인 경우 wendy frame 적용, 나머지는 perterpan frame 적용 */
-    input.forEachIndexed { idx, c ->
-        if(idx == 0)
+    input.substring(1).forEachIndexed{ idx, c ->
+        val startIdx = lines[0].lastIndex
+        when(idx % 3){
+            0 -> peterPan(startIdx, c.toString(),false)
+            1 -> wendy(startIdx, c.toString())
+            2 -> peterPan(startIdx, c.toString(),true)
+        }
     }
 
-
-    /** peter pan frame 을 만들어 주는 함수 */
-    fun peterPanFrame(c:String):MutableList
+    lines.forEach {
+        println(it)
+    }
 }

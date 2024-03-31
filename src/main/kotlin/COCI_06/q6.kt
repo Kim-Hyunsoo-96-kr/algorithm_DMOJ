@@ -38,10 +38,9 @@ fun q6(){
     println(-1)
 }
 fun isKiller(map:List<String>, size:Int, row:Int, col:Int):Boolean{
-    for(i in 0 until size){
-        for(j in i until  size){
-            if(map[row+i][col+j] != map[row+size-i-1][col+size-j-1]) return false
-        }
+    for(i in 0 until size/2){
+        if(map[row+i].substring(col, col+size) != map[row+size-i-1].substring(col, col+size).reversed())
+            return false
     }
     return true
 }

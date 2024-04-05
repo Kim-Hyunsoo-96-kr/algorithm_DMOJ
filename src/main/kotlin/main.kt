@@ -1,5 +1,3 @@
-import COCI_06.*
-
 fun main(){
-    q4()
+    COCI_06_2.q1()
 }

@@ -1,10 +1,10 @@
-package COCI_06
+package COCI_06_01
 
 import java.io.File
 
 fun q3(){
     /** 파일에서 input 읽어오기 */
-    val path = "src/main/resources/COCI_06/q3_input.txt"
+    val path = "src/main/resources/COCI_06_01/q3_input.txt"
     val file = File(path)
     val stringBuilder = StringBuilder()
     try{

@@ -35,6 +35,7 @@ fun q2(){
         /** 아스키 코드를 사용 */
         it - 'A'
     }
+    println(indexs)
 
     /** indexs를 순회하며 indexs의 요소의 숫자에 해당하는 인덱스를 가지는 numbers를 찾고 문자열로 만들어 출력 */
     println(indexs.map { numbers[it] }.joinToString(" "))

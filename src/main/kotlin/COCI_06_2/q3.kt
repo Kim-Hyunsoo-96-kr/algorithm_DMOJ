@@ -4,7 +4,7 @@ import java.io.File
 
 fun q3(){
     /** 파일에서 input 읽어오기 */
-    val path = "src/main/resources/COCI_06_03/q2_input.txt"
+    val path = "src/main/resources/COCI_06_02/q3_input.txt"
     val file = File(path)
     val stringBuilder = StringBuilder()
     try {
@@ -38,4 +38,18 @@ fun q3(){
             if( it<0 || it>50 ) error("time is out of range")
         } ?: error("time int casting fail")
     }
+
+    var s1 = "*".repeat(t) + row1.reversed()
+    var s2 = "*".repeat(row1.length) + row2
+
+    if(s1.length > s2.length) s2 += "*".repeat(s1.length - s2.length)
+    else s1 += "*".repeat(s2.length - s1.length)
+
+    var result = ""
+
+    for(i in 0 until s1.length){
+        result += "${s2[i]}${s1[i]}"
+    }
+
+    println(result.replace("*", ""))
 }

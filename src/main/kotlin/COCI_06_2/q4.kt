@@ -24,5 +24,12 @@ fun q4(){
         if(it < 3 || it > 100) error("input is out of range")
     } ?: error("invalid input")
 
+    var result = 0
+    for(i in 2..n-2){
+        result += (i-1) * (n-i-1)
+    }
+    result *= n
+    result /= 4
 
+    println(result)
 }

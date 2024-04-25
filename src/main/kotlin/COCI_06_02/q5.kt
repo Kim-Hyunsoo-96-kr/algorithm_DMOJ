@@ -1,4 +1,4 @@
-package COCI_06_2
+package COCI_06_02
 
 import java.io.File
 

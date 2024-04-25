@@ -1,10 +1,10 @@
-package COCI_06_2
+package COCI_06_02
 
 import java.io.File
 
-fun q1(){
+fun q4(){
     /** 파일에서 input 읽어오기 */
-    val path = "src/main/resources/COCI_06_02/q1_input.txt"
+    val path = "src/main/resources/COCI_06_02/q4_input.txt"
     val file = File(path)
     val stringBuilder = StringBuilder()
     try {
@@ -20,15 +20,16 @@ fun q1(){
 //    val bf = BufferedReader(InputStreamReader(System.`in`))
 //    val input = bf.readText().trim()
 
-    val (r1, mean) = input.trim().split(" ")
-        /** 입력이 int 타입으로 변환 될 수 있는지 확인 */
-        .map{ it.toIntOrNull() ?: error("invalid input") }
-        /** 입력으로 들어온 값들이 문제의 범위에 해당하는지 확인 */
-        .also{ numbers -> if(!numbers.all{ it >= -1000 && it <= 1000 }) error("invalid input : out of range") }
+    val n = input.trim().toIntOrNull()?.also{
+        if(it < 3 || it > 100) error("input is out of range")
+    } ?: error("invalid input")
 
-    /** r2 = 2*mean-r1 */
-    val r2 = 2 * mean - r1
+    var result = 0
+    for(i in 2..n-2){
+        result += (i-1) * (n-i-1)
+    }
+    result *= n
+    result /= 4
 
-    /** 출력 */
-    println(r2)
+    println(result)
 }

@@ -1,3 +1,3 @@
 fun main(){
-    COCI_06_04.q4()
+    COCI_06_05.q4()
 }

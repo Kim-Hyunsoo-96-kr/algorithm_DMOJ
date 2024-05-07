@@ -29,13 +29,17 @@ import java.io.File
  * 26 14 7 5 49  -> ? 인 상태 = 총 경기수, 승점,     총 경기수 = 14 + 7 + 5 = 26, 승점 = 14*3 + 7*1 = 49
  * 27 14 5 8 47  -> ? 인 상태 = 총 경기수, 비긴 횟수,      비긴 횟수 = (47 - 14*3)/1 = 5, 총 경기수 = 14 + 5 + 8 = 27
  *
+ *
+ * x : 승수, y : 비김수, z : 패수
+ *
  * state case 1 - 총 경기수가 ? 인 경우
  * 1-1 승점이 ? 인 경우 - 무조건 승, 비김, 패의 상태는 알려줘야 유니크함 => 2,3,4 를 통해 계산
  * 1-2 승점이 ? 아닌 경우
- * 1-2-1 승이 ? 인 경우 - 승수 = (승점 - 비김수) / 3, 경기수 = 승수 + 비김수 + 패수
- * 1-2-2 비김이 ? 인 경우 - 비김수 = (승점 - 3*승수) / 1, 경기수 = 승수 + 비김수 + 패수
- * 1-2-3 패가 ? 인경우 - 유니크하지 않으므로 패가 ? 인 경우는 없음
- * 1-3 승, 비김, 패중 2가지가 ? 인경우 유니크하지 않으므로 해당 경우는 없음
+ * 1-2-1 승점이 2이하인 경우 - 승수는 무조건 0, 따라서 패수는 무조건 알아야 유니크, 비김수 = 승점
+ * 1-2-2 승점이 3이상인 경우
+ * 1-2-2-1 승이 ? 인 경우 - 승수 = (승점 - 비김수) / 3, 경기수 = 승수 + 비김수 + 패수
+ * 1-2-2-2 비김이 ? 인 경우 - 비김수 = 승점 - 3*승수, 경기수 = 승수 + 비김수 + 패수
+ * 1-2-2-2 패가 ?인경우 - 유니크하지 않음
  *
  * state case 2 - 총 승점이 ? 인 경우
  * 2-1 총 경기수가 ? 인 경우 - 1-1의 case와 동일
@@ -51,13 +55,14 @@ import java.io.File
  * 2) 3x+y = 승점
  * 1),2) 의 식을 연립하여 x,y,z를 구하면 된다.
  * 관계식이 2가지 밖에 없으므로 x,y,z중 적어도 하나는 ?가 아님
- * x,y,z 전부 ? 일 경우 유니크하지 않으므로 해당 경우는 없음
+ * x,y,z 전부 ? 일 경우 승점이 3이상일경우 유니크하지 않으므로 해당 경우는 없음
  *
- * 3-1 승수가 ? 아닌 경우 - 비김수 = 승점 - 3*승수, 패수 = 경기수 - 승수 - 비김수
- * 3-2 비김수가 ? 아닌 경우 - 승수 = (승점 - 비김수) / 3, 패수 = 경기수 - 승수 - 비김수
- * 3-3 패수가 ? 아닌 경우 - 승수 = (승점 - 경기수 + 패수) / 2, 비김수 = 경기수 - 승수 - 패수
+ * 3-1 승점이 2 이하인 경우 - 승수는 무조건 0, 비김수 = 승점, 패수 = 경기수 - 비김수
+ * 3-2 승점이 3 이상인 경우
+ * 3-2-1 승수가 ? 아닌 경우 - 비김수 = 승점 - 3*승수, 패수 = 경기수 - 승수 - 비김수
+ * 3-2-2 비김수가 ? 아닌 경우 - 승수 = (승점 - 비김수) / 3, 패수 = 경기수 - 승수 - 비김수
+ * 3-2-3 패수가 ? 아닌 경우 - 승수 = (승점 - 경기수 + 패수) / 2, 비김수 = 경기수 - 승수 - 패수
  *
- * 2x - z = 승점 - 경기수
  */
 
 //enum class STATE(val idx:Int){
@@ -90,7 +95,7 @@ fun q4(){
     var teamStates:List<MutableList<Int>>
 
     input.trim().split("\n").also{ lines ->
-        n = lines[0].toIntOrNull()?.also{ if(it<1 || it>1000) error("n : out of range") } ?: error("n int casting fail")
+        n = lines[0].toIntOrNull()?.also{ if(it<1 || it>1000) error("n: out of range") } ?: error("n: int casting fail")
         teamStates = lines.subList(1,lines.size).map{ stateLine ->
             stateLine.trim().split(" ").let{ state ->
                 state.map{
@@ -108,46 +113,69 @@ fun q4(){
                 teamState[4] = 3*teamState[1] + teamState[2]
                 teamState[0] = teamState[1] + teamState[2] + teamState[3]
             }else{
-                /** case 1-2-1 */
-                if(teamState[1] == -1){
-                    teamState[1] = (teamState[4] - teamState[2]) / 3
-                    teamState[0] = teamState[1] + teamState[2] + teamState[3]
+                if(teamState[4] < 3){
+                    /** case 1-2-1 */
+                    if(teamState[3] != -1){
+                        teamState[1] = 0
+                        teamState[2] = teamState[4]
+                        teamState[0] = teamState[1] + teamState[2] + teamState[3]
+                    }else{
+                        error("not unique-1")
+                    }
                 }
                 /** case 1-2-2 */
                 else{
-                    teamState[2] = (teamState[4] - 3*teamState[1])
-                    teamState[0] = teamState[1] + teamState[2] + teamState[3]
+                    if(teamState[1] == -1 && teamState[2] != -1 && teamState[3] != -1){
+                        teamState[1] = (teamState[4] - teamState[2])/3
+                        teamState[0] = teamState[1] + teamState[2] + teamState[3]
+                    }else if(teamState[1] != -1 && teamState[2] == -1 && teamState[3] != -1){
+                        teamState[2] = teamState[4] - 3*teamState[1]
+                        teamState[0] = teamState[1] + teamState[2] + teamState[3]
+                    }else{
+                        error("not unique-2")
+                    }
                 }
             }
         }else if(teamState[4] == -1){
             /** case 2-2-1 */
-            if(teamState[1] == -1){
+            if(teamState[1] == -1 && teamState[2] != -1 && teamState[3] != -1){
                 teamState[1] = teamState[0] - teamState[2] - teamState[3]
                 teamState[4] = 3*teamState[1] + teamState[2]
             }
             /** case 2-2-2 */
-            else if(teamState[2] == -1){
+            else if(teamState[1] != -1 && teamState[2] == -1 && teamState[3] != -1){
                 teamState[2] = teamState[0] - teamState[1] - teamState[3]
                 teamState[4] = 3*teamState[1] + teamState[2]
             }
             /** case 2-2-3 */
-            else{
+            else if(teamState[1] != -1 && teamState[2] != -1 && teamState[3] == -1){
                 teamState[3] = teamState[0] - teamState[1] - teamState[2]
                 teamState[4] = 3*teamState[1] + teamState[2]
+            }else{
+                error("not unique-3")
             }
         }else{
             /** case 3-1 */
-            if(teamState[1] != -1){
-                teamState[2] = teamState[4] - 3*teamState[1]
-                teamState[3] = teamState[0] - teamState[1] - teamState[2]
-            /** case 3-2 */
-            } else if(teamState[2] != -1){
-                teamState[1] = (teamState[4] - teamState[2]) / 3
-                teamState[3] = teamState[0] - teamState[1] - teamState[2]
-            /** case 3-3 */
-            } else{
-                teamState[1] = (teamState[4] - teamState[0] + teamState[3]) / 2
-                teamState[2] = teamState[0] - teamState[1] - teamState[3]
+            if(teamState[4] < 3){
+                teamState[1] = 0
+                teamState[2] = teamState[4]
+                teamState[3] = teamState[0] - teamState[2]
+            }else{
+                /** case 3-2-1 */
+                if(teamState[1] != -1){
+                    teamState[2] = teamState[4] - 3*teamState[1]
+                    teamState[3] = teamState[0] - teamState[1] - teamState[2]
+                /** case 3-2-2 */
+                }else if(teamState[2] != -1){
+                    teamState[1] = (teamState[4] - teamState[2]) / 3
+                    teamState[3] = teamState[0] - teamState[1] - teamState[2]
+                /** case 3-2-3 */
+                }else if(teamState[3] != -1){
+                    teamState[1] = (teamState[4] - teamState[0] + teamState[3]) / 2
+                    teamState[2] = teamState[0] - teamState[1] - teamState[3]
+                }else{
+                    error("not unique-4")
+                }
             }
         }
     }

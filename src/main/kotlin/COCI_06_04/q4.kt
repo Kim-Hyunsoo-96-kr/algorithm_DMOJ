@@ -15,7 +15,30 @@ import java.io.File
  * 1 2 3 4 5 6 7 8 10 9
  * = 9
  *
- * 4 3      1 2 3 4
+ * 4 3          1,2,3,4
+ * 1  3 3
+ * 2  3 2
+ * 3  3 1
+ * 4  3 0
+ *
+ * f(4,3) = f(3,3) + f(3,2) + f(3,1) + f(3,0)
+ * f(3,3) = f(2,3) + f(2,2) + f(2,1) + f(2,0)
+ *
+ *
+ * f(1,0) = 1
+ * f(2,0), f(2,1) , f(2,2)
+ * f(3,0), f(3,1) , f(3,2), f(3,3)
+ * ...
+ * f(n,0) , f(n,1) .... f(n, n*(n-1)/2)
+ *
+ * f(n,c)
+ *
+ * n
+ * n-1 + n-2 + ... 1
+ *
+ * 4321 3 + 2+ 1
+ *
+ * f(4,3) = c * f(1,0)
  * 1 4 3 2
  * 2 4 1 3
  * 2 3 4 1
@@ -23,6 +46,41 @@ import java.io.File
  * 3 1 4 2
  * 4 1 2 3
  * = 6
+ *
+ *
+ * 4 4 의 경우
+ *
+ * 2, 4, 3, 1 -> 4
+ * 4, 1, 3, 2 -> 4
+ * 4, 2, 1, 3 -> 4
+ * 4, 2, 3, 1 -> 4
+ *
+ *
+ * 3, 1, 2, 4, 5 = 2
+ * 3, 1, 2, 5, 4 = 3
+ * 3, 1, 4, 2, 5 = 3
+ * 3, 1, 4, 5, 2 = 3
+ * 3, 1, 5, 2, 4 = 4
+ * 3, 1, 5, 4, 2 = 5
+ * 3, 2, 1, 4, 5 = 3
+ * 3, 2, 1, 5, 4 = 4
+ * 3, 2, 4, 1, 5 = 3
+ * 3, 2, 4, 5, 1 = 5
+ * 3, 2, 5, 1, 4 = 4
+ * 3, 2, 5, 4, 1 = 6
+ * 3, 4, 1, 2, 5 = 4
+ * 3, 4, 1, 5, 2 = 5
+ * 3, 4, 2, 1, 5 = 5
+ * 3, 4, 2, 5, 1 = 5
+ * 3, 4, 5, 1, 2 = 6
+ * 3, 4, 5, 2, 1 = 6
+ * 3, 5, 1, 2, 4 = 5
+ * 3, 5, 1, 4, 2 = 6
+ * 3, 5, 2, 1, 4 = 6
+ * 3, 5, 2, 4, 1 = 7
+ * 3, 5, 4, 1, 2 = 7
+ * 3, 5, 4, 2, 1 = 8
+ *
  *
  *
  * f(n, c) = f(n-1, c) + f(n-1, c-1) + f(n-1, c-2) + ... + f(n-1, 0)
@@ -100,21 +158,38 @@ fun q4(){
             if(it[1] < 0 || it[1] > 10000) error("C is out of range")
         }
 
-    val map = Array(N){ IntArray(C){-1} }
+    val map = Array(N+1){ LongArray(C+1){0} }
 
     val queue = mutableListOf(N to C)
     var result = 0
 
-    while(queue.isNotEmpty()){
-        val (n, c) = queue.removeFirst()
-        if(c <= n*(n-1)/2){
-            if(c == n*(n-1)/2 || c == 0) result += 1
+    for(n in 1..N){
+        for(c in 0..C){
+            if(c > n*(n-1)/2) break
+            if(c == n*(n-1)/2 || c == 0){ map[n][c] = 1 }
             else{
-                for(i in 0..c) queue.add(n-1 to i)
+                var value = 0L
+                val last = if(c-(n-1) >= 0) c-(n-1) else 0
+                (c downTo last).forEach{
+                    value = (value + map[n-1][it]) % 1000000007
+                }
+                map[n][c] = value
             }
         }
     }
-    println(result)
+
+    println(map[N][C] % 1000000007)
+//    while(queue.isNotEmpty()){
+//        val (n, c) = queue.removeFirst()
+//        if(c <= n*(n-1)/2){
+//            if(c == n*(n-1)/2 || c == 0) result += 1
+//            else{
+//                val last = if(c-(n-1) >= 0) c-(n-1) else 0
+//                for(i in c downTo last) queue.add(n-1 to i)
+//            }
+//        }
+//    }
+//    println(result)
 }
 
 /**
